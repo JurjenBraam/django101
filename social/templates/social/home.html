@@ -34,6 +34,10 @@
 
     <!-- Search box -->
     <div class='col-xs-2'>
+  	  <div class='well'>
+		  <a href="/home">Home</a>
+  		  <a href="/profile/{{user}}">Profile</a>
+  	  </div>
       <div class='well'>
         <form action="{% url 'social:home' %}" method="post" id='search-bar'>
           {% csrf_token %}
@@ -44,8 +48,10 @@
         </form>
         <a class='btn btn-success' href="{% url 'social:home' %}">Show all</a>
       </div>
+	  
     </div>
   </div>
+  
 
 	  <!-- Previous posts container -->
 	        <div class='row'>
@@ -53,7 +59,7 @@
 	            {% for post in posts %}
 	            <div class='panel panel-default' id="{{post.id}}">
 				  <div class='panel-heading'>
-				    <h4>{{post.poster.username}}</h4>
+				    <a href="/profile/{{post.poster.username}}"><h4>{{post.poster.username}}</h4></a>
 				    <h4 class='small'>
 				      posted on {{post.date_time}}
 				      {% if post.poster == user %}
@@ -77,7 +83,13 @@
 	                  <ul class='list-group'>
 	                    {% for comment in post.comment_set.all %}
 	                    <li class='list-group-item'> 
-	                      {{comment.text}} - {{comment.poster.username}} ({{comment.date_time}}) 
+	                      {{comment.text}} - <a href="/profile/{{comment.poster.username}}">{{comment.poster.username}}</a> ({{comment.date_time}}) 
+						  {% if comment.poster == user %}
+						  <form action="{% url 'social:delete_comment' comment.id %}" method="post" id='delete-comment'>
+						        {% csrf_token %}
+						        <button type='submit'title='delete comment' class='glyphicon glyphicon-trash pull-right'></button>
+						      </form>
+						      {% endif %}
 	                    </li>
 	                    {% endfor %}
 	                  </ul>

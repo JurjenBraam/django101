@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from social.models import Post
 from social.models import Comment
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
@@ -23,6 +24,22 @@ def home(request):
             return HttpResponseBadRequest(check[1])
     posts = posts.order_by('-date_time')
     return render(request, 'social/home.html', {'posts': posts, 'user': request.user})
+    
+@login_required
+def profile(request, username):
+    if request.method == 'GET':
+        user = User.objects.get(username=username)
+        posts = Post.objects.filter(poster__id=user.id)
+    elif request.method == 'POST':
+        check = _check_post_request(request, ['search_terms'])
+        if check[0]:
+            search_term = request.POST['search_terms']
+            posts = Post.objects.filter(text__icontains=search_term)
+        else:
+            return HttpResponseBadRequest(check[1])
+    posts = posts.order_by('-date_time')
+    return render(request, 'social/profile.html', {'posts': posts, 'user': request.user})
+    
 
 @login_required
 def add_post(request):
@@ -88,4 +105,13 @@ def delete_post(request, post_id):
         return HttpResponseForbidden("You can only delete your own posts!")
     else:
         post.delete()
+        return HttpResponseRedirect(reverse('social:home'))
+        
+@login_required
+def delete_comment(request, comment_id):
+    comment = Comment.objects.get(pk=comment_id)
+    if request.user != comment.poster:
+        return HttpResponseForbidden("You can only delete your own comments!")
+    else:
+        comment.delete()
         return HttpResponseRedirect(reverse('social:home'))
