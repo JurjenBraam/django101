@@ -6,6 +6,7 @@ from social.models import Post
 from social.models import Comment
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 
 # Create your views here.
 def index(request):
@@ -83,6 +84,11 @@ def social_login(request):
            return HttpResponseBadRequest("The combination of username and password does not exist.")
    else:
        return HttpResponseBadRequest(check[1])
+       
+       
+def social_logoff(request):
+   logout(request)
+   return HttpResponseRedirect(reverse('social:home'))
           
 def _check_post_request(request, keys):
     # Check that the request method is POST

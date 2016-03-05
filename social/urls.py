@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'post/delete/(?P<post_id>[0-9]+)/$',   views.delete_post, name="delete_post"),
     url(r'comment/delete/(?P<comment_id>[0-9]+)/$',   views.delete_comment, name="delete_comment"),
     url(r'profile/(?P<username>[a-zA-Z0-9]+)/$', views.profile, name='profile'),
+    url(r'logoff/', views.social_logoff, name='logoff'),
 ]
